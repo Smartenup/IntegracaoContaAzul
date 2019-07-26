@@ -1,0 +1,9 @@
+﻿Group: Misc methods
+FriendlyName: Conta Azul
+SystemName: Misc.ContaAzul
+Version: 1.00
+SupportedVersions: 3.80
+Author: SmartenUP team/Pedro Usinskas
+DisplayOrder: 1
+FileName: Nop.Plugin.Misc.ContaAzul.dll
+Description: This plugin allows integration with ERP Conta Azul
