@@ -103,9 +103,9 @@ namespace Nop.Plugin.Misc.ContaAzul
                     //busca por cpf conta azul, se existir, verifica se já foi adicionado na tabela do banco
                     if (GetCustomerResponse.Count() > 0)
                     {
-                        var customerPayPalPlus = _contaAzulCustomerService.GetCustomer(GetCustomerResponse[0]);
+                        var customerTable = _contaAzulCustomerService.GetCustomer(GetCustomerResponse[0]);
                         //caso ele não exista na tabela relacional do banco, insere e atualiza no conta azul
-                        if (customerPayPalPlus == null)
+                        if (customerTable == null)
                         {
                             using (var customerCreation = new CustomerCreation(ContaAzulMiscSettings.UseSandbox))
                                 CustomerResponse = customerCreation.CreateAsyncUpdate(customer, GetCustomerResponse[0].id.ToString(), ContaAzulMiscSettings.access_token).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -123,7 +123,7 @@ namespace Nop.Plugin.Misc.ContaAzul
                         else
                         {
                          
-                            customer.id = customerPayPalPlus.ContaAzulId.ToString();
+                            customer.id = customerTable.ContaAzulId.ToString();
                             customer.address.city.name = null;
 
                             var data1 = JsonConvert.SerializeObject(GetCustomerResponse[0]);
@@ -136,7 +136,7 @@ namespace Nop.Plugin.Misc.ContaAzul
                             {
                                 //se ele já existe na tabela, só faz o update no conta azul
                                 using (var customerCreation = new CustomerCreation(ContaAzulMiscSettings.UseSandbox))
-                                    CustomerResponse = customerCreation.CreateAsyncUpdate(customer, customerPayPalPlus.ContaAzulId.ToString(), ContaAzulMiscSettings.access_token).ConfigureAwait(false).GetAwaiter().GetResult();
+                                    CustomerResponse = customerCreation.CreateAsyncUpdate(customer, customerTable.ContaAzulId.ToString(), ContaAzulMiscSettings.access_token).ConfigureAwait(false).GetAwaiter().GetResult();
                             }
                           
                         }

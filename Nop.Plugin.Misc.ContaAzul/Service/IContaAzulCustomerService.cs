@@ -8,8 +8,6 @@ namespace Nop.Plugin.Misc.ContaAzul.Service
     {
         void InsertCustomer(CustomerContaAzul customerContaAzul);
 
-        void UpdateCustomer(CustomerContaAzul customerContaAzul);
-
         CustomerContaAzul GetCustomerContaAzul(Customer customer);
 
         CustomerContaAzul GetCustomer(CustomerResponse customer);

@@ -22,6 +22,7 @@ namespace Nop.Plugin.Misc.ContaAzul.Infrastructure
         {
             builder.RegisterType<ContaAzulService>().As<IContaAzulService>().InstancePerLifetimeScope();
             builder.RegisterType<ContaAzulCustomerService>().As<IContaAzulCustomerService>().InstancePerLifetimeScope();
+            builder.RegisterType<ContaAzulProductService>().As<IContaAzulProductService>().InstancePerLifetimeScope();
 
             //data context
             this.RegisterPluginDataContext<ContaAzulObjectContext>(builder, CONTEXT_NAME);
@@ -29,6 +30,11 @@ namespace Nop.Plugin.Misc.ContaAzul.Infrastructure
 
             builder.RegisterType<EfRepository<CustomerContaAzul>>()
             .As<IRepository<CustomerContaAzul>>()
+            .WithParameter(ResolvedParameter.ForNamed<IDbContext>(CONTEXT_NAME))
+            .InstancePerLifetimeScope();
+
+            builder.RegisterType<EfRepository<ProductContaAzul>>()
+            .As<IRepository<ProductContaAzul>>()
             .WithParameter(ResolvedParameter.ForNamed<IDbContext>(CONTEXT_NAME))
             .InstancePerLifetimeScope();
 

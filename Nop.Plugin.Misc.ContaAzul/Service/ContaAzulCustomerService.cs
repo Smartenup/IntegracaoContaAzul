@@ -23,12 +23,7 @@ namespace Nop.Plugin.Misc.ContaAzul.Service
 
             _customerContaAzulRepository.Insert(customerContaAzul);
         }
-
-        public void UpdateCustomer(CustomerContaAzul customerContaAzul)
-        {
-            throw new NotImplementedException();
-        }
-
+           
         public CustomerContaAzul GetCustomerContaAzul(Customer customer)
         {
             var query = _customerContaAzulRepository.Table;

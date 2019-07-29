@@ -15,7 +15,7 @@ namespace Nop.Plugin.Misc.ContaAzul.Models.Message.Response
         }
 
         [JsonProperty("id")]
-        public string id { get; set; }
+        public Guid id { get; set; }
 
         [JsonProperty("name")]
         public string name { get; set; }

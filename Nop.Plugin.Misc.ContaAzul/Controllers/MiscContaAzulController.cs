@@ -48,6 +48,7 @@ namespace Nop.Plugin.Misc.ContaAzul.Controllers
         private readonly IContaAzulCustomerService _contaAzulCustomerService;
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
+        private readonly IContaAzulProductService _contaAzulProductService;
 
         public MiscContaAzulController(IWorkContext workContext,
             IStoreService storeService,
@@ -67,7 +68,8 @@ namespace Nop.Plugin.Misc.ContaAzul.Controllers
             IPriceCalculationService priceCalculationService,
             IContaAzulCustomerService contaAzulCustomerService,
             IProductService productService,
-            ICategoryService categoryService)
+            ICategoryService categoryService,
+            IContaAzulProductService contaAzulProductService)
         {
             _workContext = workContext;
             _storeService = storeService;
@@ -88,6 +90,7 @@ namespace Nop.Plugin.Misc.ContaAzul.Controllers
             _contaAzulCustomerService = contaAzulCustomerService;
             _productService = productService;
             _categoryService = categoryService;
+            _contaAzulProductService = contaAzulProductService;
 
             _jsonSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
         }
@@ -535,33 +538,77 @@ namespace Nop.Plugin.Misc.ContaAzul.Controllers
             foreach (var item in products)
             {
                 var product = new ProductMessage();
-                var categoria = _categoryService.GetProductCategoriesByProductId(item.Id).Select(x => x.CategoryId).FirstOrDefault();
+                //var categoria = _categoryService.GetProductCategoriesByProductId(item.Id).Select(x => x.CategoryId).FirstOrDefault();
+                var categoria = _categoryService.GetProductCategoryById(item.Id);
 
                 product.name = item.Name;
                 product.value = item.Price;
                 product.cost = item.ProductCost;
                 product.available_stock = item.StockQuantity;
                 product.net_weight = Math.Round(item.Weight, 2);
-                product.category.id = categoria.ToString();
+                product.category.id = categoria.Category.Id.ToString();
+                product.category.name = categoria.Category.Name;
 
 
                 try
                 {
-                    var filtro = "?search=";
+                    var filtro = "?name=" + item.Name;
 
                     using (var getproduct = new GetProduct(ContaAzulMiscSettings.UseSandbox))
                         GetProductResponse = getproduct.CreateAsync(null, ContaAzulMiscSettings.access_token, filtro).ConfigureAwait(false).GetAwaiter().GetResult();
 
-                    if(GetProductResponse.Count() > 0)
+                    if (GetProductResponse.Count() > 0)
                     {
+                        var productTable = _contaAzulProductService.GetProduct(GetProductResponse[0]);
+                        //caso ele não exista na tabela relacional do banco, insere e atualiza no conta azul
+                        if (productTable == null)
+                        {
+                            using (var productCreation = new ProductCreation(ContaAzulMiscSettings.UseSandbox))
+                                ProductResponse = productCreation.CreateAsyncUpdate(product, GetProductResponse[0].id.ToString(), ContaAzulMiscSettings.access_token).ConfigureAwait(false).GetAwaiter().GetResult();
 
+                            if (ProductResponse != null)
+                            {
+                                var productContaAzul = new ProductContaAzul();
+
+                                productContaAzul.ContaAzulId = ProductResponse.id;
+                                productContaAzul.ProductId = item.Id;
+                                productContaAzul.DataCriacao = DateTime.Now;
+                                _contaAzulProductService.InsertProduct(productContaAzul);
+                            }
+
+                        }else
+                        {//caso já existe no banco, só verifica se houve alteração e faz o update no conta azul
+
+                            product.id = productTable.ContaAzulId.ToString();
+
+                            var objetoContaAzul = JsonConvert.SerializeObject(GetProductResponse[0]);
+                            var objetoAtualizar = JsonConvert.SerializeObject(product);
+
+                            var data = objetoAtualizar.Equals(objetoContaAzul);
+
+                            if (!objetoAtualizar.Equals(objetoContaAzul))
+                            {
+                                using (var productCreation = new ProductCreation(ContaAzulMiscSettings.UseSandbox))
+                                    ProductResponse = productCreation.CreateAsyncUpdate(product, productTable.ContaAzulId.ToString(), ContaAzulMiscSettings.access_token).ConfigureAwait(false).GetAwaiter().GetResult();
+                            }
+                        }
                     }
                     else
-                    {
+                    {//caso ele não exista no conta azul, faz a inserção dele no conta azul e no banco de dados
                         var data2 = JsonConvert.SerializeObject(product);
 
                         using (var productCreation = new ProductCreation(ContaAzulMiscSettings.UseSandbox))
                             ProductResponse = productCreation.CreateAsync(product, ContaAzulMiscSettings.access_token).ConfigureAwait(false).GetAwaiter().GetResult();
+
+                        if (ProductResponse != null)
+                        {
+                            var productContaAzul = new ProductContaAzul();
+
+                            productContaAzul.ContaAzulId = ProductResponse.id;
+                            productContaAzul.ProductId = item.Id;
+                            productContaAzul.DataCriacao = DateTime.Now;
+                            _contaAzulProductService.InsertProduct(productContaAzul);
+                        }
                     }
                 }
                 catch (Exception ex)

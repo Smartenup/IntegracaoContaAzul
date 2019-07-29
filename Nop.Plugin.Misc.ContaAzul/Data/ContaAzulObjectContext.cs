@@ -26,6 +26,7 @@ namespace Nop.Plugin.Misc.ContaAzul.Data
         {
            // modelBuilder.Configurations.Add(new ContaAzulRecordMap());
             modelBuilder.Configurations.Add(new CustomerContaAzulMap());
+            modelBuilder.Configurations.Add(new ProductContaAzulMap());
 
             //disable EdmMetadata generation
             //modelBuilder.Conventions.Remove<IncludeMetadataConvention>();
