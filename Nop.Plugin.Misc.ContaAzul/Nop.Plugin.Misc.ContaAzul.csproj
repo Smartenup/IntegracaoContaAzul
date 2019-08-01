@@ -93,6 +93,7 @@
   <ItemGroup>
     <Compile Include="ContaAzulMiscProcessor.cs" />
     <Compile Include="ContaAzulMiscSettings.cs" />
+    <Compile Include="ContaAzulSincronizaProdutoTask.cs" />
     <Compile Include="Controllers\MiscContaAzulController.cs" />
     <Compile Include="Data\ContaAzulObjectContext.cs" />
     <Compile Include="Data\CustomerContaAzulMap.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="Domain\ProductContaAzul.cs" />
     <Compile Include="Infrastructure\DependecyRegistrar.cs" />
     <Compile Include="Lib\APIResource.cs" />
+    <Compile Include="Lib\GetCategory.cs" />
     <Compile Include="Lib\GetCustomer.cs" />
     <Compile Include="Lib\CustomerCreation.cs" />
     <Compile Include="Lib\GetProduct.cs" />
@@ -113,6 +115,7 @@
     <Compile Include="Models\ConfigurationModel.cs" />
     <Compile Include="Models\Message\Request\CustomerMessage.cs" />
     <Compile Include="Models\Message\Request\ProductMessage.cs" />
+    <Compile Include="Models\Message\Response\CategoryResponse.cs" />
     <Compile Include="Models\Message\Response\CustomerResponse.cs" />
     <Compile Include="Models\Message\Response\MiscExecutitionResponse.cs" />
     <Compile Include="Models\Message\Response\ProductResponse.cs" />

@@ -533,22 +533,26 @@ namespace Nop.Plugin.Misc.ContaAzul.Controllers
 
             ProductResponse[] GetProductResponse = null;
             ProductResponse ProductResponse = null;
+            CategoryResponse[] CategoryResponse = null;
             var ContaAzulMiscSettings = _settingService.LoadSetting<ContaAzulMiscSettings>();
 
             foreach (var item in products)
             {
                 var product = new ProductMessage();
-                //var categoria = _categoryService.GetProductCategoriesByProductId(item.Id).Select(x => x.CategoryId).FirstOrDefault();
-                var categoria = _categoryService.GetProductCategoryById(item.Id);
+                var categoria = "?name=Mercadoria para Revenda";
+                //busca a categoria no conta azul para obter o id:
+                using (var getcategory = new GetCategory(ContaAzulMiscSettings.UseSandbox))
+                    CategoryResponse = getcategory.CreateAsync(ContaAzulMiscSettings.access_token, categoria).ConfigureAwait(false).GetAwaiter().GetResult();
+
+               // var categoria = _categoryService.GetProductCategoryById(item.Id);
 
                 product.name = item.Name;
-                product.value = item.Price;
-                product.cost = item.ProductCost;
+                product.value = Math.Round(item.Price,1);
+                product.cost = Math.Round(item.ProductCost);
                 product.available_stock = item.StockQuantity;
-                product.net_weight = Math.Round(item.Weight, 2);
-                product.category.id = categoria.Category.Id.ToString();
-                product.category.name = categoria.Category.Name;
-
+                product.net_weight = Math.Round(item.Weight, 3);
+                product.category_id = CategoryResponse[0].id;
+                product.gross_weight = Math.Round(item.Weight, 3);
 
                 try
                 {

@@ -1,0 +1,3 @@
+insert ScheduleTask  (name, Seconds, Type, Enabled, StopOnError)values ( 'ContaAzulSincronizaProdutoTask', 600, 'Nop.Plugin.Misc.ContaAzul.ContaAzulSincronizaProdutoTask, Nop.Plugin.Misc.ContaAzul',0,0)
+
+insert ScheduleTask  (name, Seconds, Type, Enabled, StopOnError)values ( 'ContaAzulSincronizaClienteTask', 600, 'Nop.Plugin.Misc.ContaAzul.ContaAzulSincronizaClienteTask, Nop.Plugin.Misc.ContaAzul',0,0)

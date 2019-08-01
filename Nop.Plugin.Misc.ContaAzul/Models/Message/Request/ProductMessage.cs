@@ -1,18 +1,13 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Nop.Plugin.Misc.ContaAzul.Models.Message.Request
 {
     public class ProductMessage
     {
-        public ProductMessage()
-        {
-            category = new Category();
-        }
+        //public ProductMessage()
+        //{
+        //    category = new Category();
+        //}
 
         [JsonProperty("id")]
         public string id { get; set; }
@@ -47,16 +42,16 @@ namespace Nop.Plugin.Misc.ContaAzul.Models.Message.Request
         [JsonProperty("gross_weight")]
         public decimal gross_weight { get; set; }
 
-        [JsonProperty("category")]
-        public Category category { get; set; }
+        [JsonProperty("category_id")]
+        public string category_id { get; set; }
     }
 
-    public partial class Category
-    {
-        [JsonProperty("id")]
-        public string id { get; set; }
+    //public partial class Category
+    //{
+    //    [JsonProperty("id")]
+    //    public string id { get; set; }
 
-        [JsonProperty("name")]
-        public string name { get; set; }
-    }
+    //    [JsonProperty("name")]
+    //    public string name { get; set; }
+    //}
 }

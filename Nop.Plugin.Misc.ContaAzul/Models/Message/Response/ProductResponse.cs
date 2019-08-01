@@ -9,10 +9,10 @@ namespace Nop.Plugin.Misc.ContaAzul.Models.Message.Response
 {
     public class ProductResponse
     {
-        public ProductResponse()
-        {
-            category = new Category();
-        }
+        //public ProductResponse()
+        //{
+        //    category = new Category();
+        //}
 
         [JsonProperty("id")]
         public Guid id { get; set; }
@@ -47,16 +47,16 @@ namespace Nop.Plugin.Misc.ContaAzul.Models.Message.Response
         [JsonProperty("gross_weight")]
         public decimal gross_weight { get; set; }
 
-        [JsonProperty("category")]
-        public Category category { get; set; }
+        [JsonProperty("category_id")]
+        public string category_id { get; set; }
     }
 
-    public partial class Category
-    {
-        [JsonProperty("id")]
-        public string id { get; set; }
+    //public partial class Category
+    //{
+    //    [JsonProperty("id")]
+    //    public string id { get; set; }
 
-        [JsonProperty("name")]
-        public string name { get; set; }
-    }
+    //    [JsonProperty("name")]
+    //    public string name { get; set; }
+    //}
 }
