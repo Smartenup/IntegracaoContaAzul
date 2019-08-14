@@ -88,21 +88,29 @@ namespace Nop.Plugin.Misc.ContaAzul
                     if (GetProductResponse.Count() > 0)
                     {
                         var productTable = _contaAzulProductService.GetProduct(GetProductResponse[0]);
-                        //caso ele não exista na tabela relacional do banco, insere e atualiza no conta azul
+                        //caso ele não exista na tabela relacional do banco, insere, verifica se houve alteração e atualiza no conta azul
                         if (productTable == null)
                         {
-                            using (var productCreation = new ProductCreation(ContaAzulMiscSettings.UseSandbox))
-                                ProductResponse = productCreation.CreateAsyncUpdate(product, GetProductResponse[0].id.ToString(), ContaAzulMiscSettings.access_token).ConfigureAwait(false).GetAwaiter().GetResult();
 
-                            if (ProductResponse != null)
+                            var productContaAzul = new ProductContaAzul();
+
+                            productContaAzul.ContaAzulId = GetProductResponse[0].id;
+                            productContaAzul.ProductId = item.Id;
+                            productContaAzul.DataCriacao = DateTime.Now;
+                            _contaAzulProductService.InsertProduct(productContaAzul);
+
+                            product.category_id = null;
+                            product.id = GetProductResponse[0].id.ToString();
+
+                            var objetoContaAzul = JsonConvert.SerializeObject(GetProductResponse[0]);
+                            var objetoAtualizar = JsonConvert.SerializeObject(product);
+
+                            if (!objetoAtualizar.Equals(objetoContaAzul))
                             {
-                                var productContaAzul = new ProductContaAzul();
-
-                                productContaAzul.ContaAzulId = ProductResponse.id;
-                                productContaAzul.ProductId = item.Id;
-                                productContaAzul.DataCriacao = DateTime.Now;
-                                _contaAzulProductService.InsertProduct(productContaAzul);
-                            }
+                                using (var productCreation = new ProductCreation(ContaAzulMiscSettings.UseSandbox))
+                                    ProductResponse = productCreation.CreateAsyncUpdate(product, GetProductResponse[0].id.ToString(), ContaAzulMiscSettings.access_token).ConfigureAwait(false).GetAwaiter().GetResult();
+                            }                        
+                               
 
                         }
                         else

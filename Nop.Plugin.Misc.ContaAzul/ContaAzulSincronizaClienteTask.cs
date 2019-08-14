@@ -107,18 +107,31 @@ namespace Nop.Plugin.Misc.ContaAzul
                         //caso ele não exista na tabela relacional do banco, insere e atualiza no conta azul
                         if (customerTable == null)
                         {
-                            using (var customerCreation = new CustomerCreation(ContaAzulMiscSettings.UseSandbox))
-                                CustomerResponse = customerCreation.CreateAsyncUpdate(customer, GetCustomerResponse[0].id.ToString(), ContaAzulMiscSettings.access_token).ConfigureAwait(false).GetAwaiter().GetResult();
 
-                            if (CustomerResponse != null)
+                            var customerContaAzul = new CustomerContaAzul();
+
+                            customerContaAzul.ContaAzulId = GetCustomerResponse[0].id;
+                            customerContaAzul.CustomerId = item.Id;
+                            customerContaAzul.DataCriacao = DateTime.Now;
+                            _contaAzulCustomerService.InsertCustomer(customerContaAzul);
+
+                            customer.id = customerTable.ContaAzulId.ToString();
+                            customer.address.city.name = null;
+
+                            var data1 = JsonConvert.SerializeObject(GetCustomerResponse[0]);
+                            var data2 = JsonConvert.SerializeObject(customer);
+
+
+                           // var data = data2.Equals(data1);
+
+                            if (!data1.Equals(data2))
                             {
-                                var customerContaAzul = new CustomerContaAzul();
-
-                                customerContaAzul.ContaAzulId = CustomerResponse.id;
-                                customerContaAzul.CustomerId = item.Id;
-                                customerContaAzul.DataCriacao = DateTime.Now;
-                                _contaAzulCustomerService.InsertCustomer(customerContaAzul);
+                                //se ele já existe na tabela, só faz o update no conta azul
+                                using (var customerCreation = new CustomerCreation(ContaAzulMiscSettings.UseSandbox))
+                                    CustomerResponse = customerCreation.CreateAsyncUpdate(customer, GetCustomerResponse[0].id.ToString(), ContaAzulMiscSettings.access_token).ConfigureAwait(false).GetAwaiter().GetResult();
                             }
+
+
                         }
                         else
                         {
